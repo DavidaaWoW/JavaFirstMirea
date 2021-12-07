@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static javax.swing.JOptionPane.showMessageDialog;
 
@@ -12,9 +14,11 @@ public class ClientData extends JFrame {
     private JLabel label2 = new JLabel();
     private JLabel label3 = new JLabel();
     private JLabel label4 = new JLabel();
+    private JLabel label5 = new JLabel();
     private JTextArea textArea = new JTextArea();
     private JTextArea textArea2 = new JTextArea();
     private JTextArea textArea3 = new JTextArea();
+    private JTextArea textArea4 = new JTextArea();
     JButton button = new JButton();
     public ClientData(Doctors doctors){
         setSize(1080,720);
@@ -42,12 +46,15 @@ public class ClientData extends JFrame {
         label2.setFont(f);
         label3.setFont(f);
         label4.setFont(f);
-        textArea.setPreferredSize(new Dimension(300,25));
-        textArea2.setPreferredSize(new Dimension(50,25));
-        textArea3.setPreferredSize(new Dimension(300,25));
+        label5.setFont(f);
+        textArea.setPreferredSize(new Dimension(300,20));
+        textArea2.setPreferredSize(new Dimension(50,20));
+        textArea3.setPreferredSize(new Dimension(300,20));
+        textArea4.setPreferredSize(new Dimension(300,20));
         textArea.setFont(f);
         textArea2.setFont(f);
         textArea3.setFont(f);
+        textArea4.setFont(f);
         button.setFont(f);
         gbl.setConstraints(label2, c);
         add(label2);
@@ -61,9 +68,14 @@ public class ClientData extends JFrame {
         add(label4);
         gbl.setConstraints(textArea3, c);
         add(textArea3);
+        gbl.setConstraints(label5, c);
+        add(label5);
+        gbl.setConstraints(textArea4, c);
+        add(textArea4);
         label2.setText("Enter your name and surname");
         label3.setText("Enter your age");
         label4.setText("Enter additional comments");
+        label5.setText("Enter your email address");
         button.setPreferredSize(new Dimension(200,50));
         button.setText("Submit");
         gbl.setConstraints(button, c);
@@ -73,9 +85,16 @@ public class ClientData extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 try{
                     int k = Integer.parseInt(textArea2.getText());
+                    String regex = "^[A-Za-z0-9+_.-]+@(.+)$";
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(textArea4.getText());
+                    if(!matcher.matches())
+                        throw new Exception();
+                    goToJoin(doctors, textArea.getText(), e);
+
                 }
                 catch (Exception exception){
-                    showMessageDialog(null, "Enter your real age!");
+                    showMessageDialog(null, "Check the correctness of the written data");
                 }
             }
 
@@ -99,5 +118,12 @@ public class ClientData extends JFrame {
 
             }
         });
+    }
+    private void goToJoin(Doctors doctors, String name, MouseEvent e){
+        TimeSelect timeSelect = new TimeSelect(doctors, name);
+        timeSelect.setVisible(true);
+        timeSelect.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        Window frame = SwingUtilities.windowForComponent((Component) e.getSource());
+        frame.setVisible(false);
     }
 }
